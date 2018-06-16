@@ -10,7 +10,7 @@ func NewRouter() *mux.Router {
     router := mux.NewRouter().StrictSlash(true)
 	
 	for _, webroute:= range webroutes{	
-	staticFileDirectory := http.Dir("."+webroute.Pattern)
+	staticFileDirectory := http.Dir("."+"/assets/")
 	staticFileHandler := http.StripPrefix(webroute.Pattern, http.FileServer(staticFileDirectory))
 	router.PathPrefix(webroute.Pattern).Handler(staticFileHandler).Methods("GET")
 	}

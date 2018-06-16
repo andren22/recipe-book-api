@@ -50,17 +50,17 @@ var routes = Routes{
 	},
 
     Route{
-        "WebRecipeIndex",
+        "WebRecipeApp",
         "GET",
-        "/recipes",
-        WebRecipeIndexHandler,
+        "/recipes/app",
+        WebRecipesAppHandler,
     },
 }
 
 var webroutes = WebRoutes{
     WebRoute{
         "GET",
-        "/recipes/",
+        "/recipes/app/",
     },
 }
 

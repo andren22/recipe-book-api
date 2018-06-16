@@ -10,8 +10,8 @@ import (
     "strconv" 
 
 )
-func WebRecipeIndexHandler(w http.ResponseWriter, r *http.Request) {
-    http.Redirect(w, r, "/recipes/index.html", http.StatusFound)
+func WebRecipesAppHandler(w http.ResponseWriter, r *http.Request) {
+    http.Redirect(w, r, "/recipes/app/webApp.html", http.StatusFound)
 } 
 
 func GetAllRecipesHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +26,7 @@ func GetAllRecipesHandler(w http.ResponseWriter, r *http.Request) {
 func CreateRecipeHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("Create recipe request\n")
     var recipe Recipe 
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
     body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
     errCatch(err)
@@ -33,16 +34,14 @@ func CreateRecipeHandler(w http.ResponseWriter, r *http.Request) {
     errCatch(err)
     err = json.Unmarshal(body, &recipe)
     if err != nil {
-        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
         w.WriteHeader(422) // unprocessable entity
         jsonerror,err:=json.Marshal(err)
         errCatch(err)
         w.Write(jsonerror)
-        }
+    }
 
     recipe=AddRecipe(recipe)
     jsonSend, err := json.Marshal(recipe)
-    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
     w.WriteHeader(http.StatusCreated)
     w.Write(jsonSend)
 }
@@ -67,6 +66,7 @@ func GetRecipeHandler(w http.ResponseWriter, r *http.Request) {
 func EditRecipeHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("Edit recipe request\n")
     var recipe Recipe 
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
     vars := mux.Vars(r)
     recipeId, err := strconv.Atoi(vars["recipeId"])
@@ -77,15 +77,18 @@ func EditRecipeHandler(w http.ResponseWriter, r *http.Request) {
     err = r.Body.Close()
     errCatch(err)
     err = json.Unmarshal(body, &recipe)
+
     if err != nil {
-        w.Header().Set("Content-Type", "application/json; charset=UTF-8")
         w.WriteHeader(422) // unprocessable entity
         jsonerror,err:=json.Marshal(err)
         errCatch(err)
         w.Write(jsonerror)
-        }
+        return
+    }  
     recipe=EditRecipe(recipeId, recipe)
-
+    mresponse,err:=json.Marshal(recipe)
+    errCatch(err)
+    w.Write(mresponse)
 }
 
 func DeleteRecipeHandler(w http.ResponseWriter, r *http.Request) {
@@ -94,10 +97,17 @@ func DeleteRecipeHandler(w http.ResponseWriter, r *http.Request) {
     vars := mux.Vars(r)
     recipeId, err := strconv.Atoi(vars["recipeId"])
     errCatch(err)
-
-
     msg:=DeleteRecipe(recipeId)
-    fmt.Fprintln(w,msg)
+    w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    if msg =="not found" {
+        w.WriteHeader(422) // unprocessable entity
+    }else{
+        w.WriteHeader(http.StatusOK)
+    }
+    mresponse,err:=json.Marshal(msg)
+    errCatch(err)
+    w.Write(mresponse)
+    
 }
 
 
