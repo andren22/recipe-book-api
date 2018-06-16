@@ -1,0 +1,389 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="">
+<!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documento sin título</title>
+<link href="boilerplate.css" rel="stylesheet" type="text/css">
+<link href="index.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+.gridContainer.clearfix #LayoutDiv1 h1 {
+	text-align: center;
+}
+.gridContainer {
+  width: 600px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="gridContainer clearfix">
+  <div id="LayoutDiv1">
+    <h1>Recipe List Book</h1>
+  </div>
+</div>
+<p id="demo"></p>
+<div class="gridContainer" id="indexScreen"><!------------ MAIN PAGE------------->
+  <h2>Recipe list:</h2>
+  <p id="recipeslist"></p>
+
+
+  <div style="text-align: center;"><p><button class="mediumButton" onclick="showCreationScreen()">Create recipe</button></p></div>
+  
+</div>
+
+
+<div class="gridContainer" id="creationScreen"><!-------- CREATION PAGE-------->
+
+  <h2 id="createTitle">Create/Edit recipe:</h2>
+  <div class="leftDiv">  
+    <p>Name: <input class="recipeField" type="text" name="input_name" id="input_name"></p><br/>
+    <p>Yields: <input class="recipeField" type="text" name="input_yields" id="input_yields"></p><br/>
+    <p>Time (minutes): <input class="smallField" type="text" name="input_tmins" id="input_tmins"></p><br/>
+    <p>New ingredient:</p><br/>
+    <p class="tabtext">Name: <input class="recipeField" type="text" name="input_ing" id="input_ing"></p><br/>
+    <p class="tabtext">Amount: <input class="smallField" type="text" name="input_amount" id="input_amount"></p><br/>
+    <p class="tabtext">
+      <button style="padding:3px;" onclick="newIng()">Add ingredient</button></p><br/><br/>
+    <p>Ingredient list:</p><br/>
+    <p id="newIngredients"></p>
+  </div>
+  
+  <div class="rightDiv">
+    <p>New direction:</p><br/>
+    <p> 
+      <textarea id="input_dir" text="text"></textarea>
+    </p><br/>
+    <p>
+    <button style="padding: 2px 10px;margin-right:10px;" onclick="newDir()">Add direction</button>
+    <button style="padding: 2px 5px;" onclick="deleteDir()">Delete directions</button><br/>
+    <button id="createb" style="padding: 2px 10px;margin-right:10px;margin-top: 10px;" onclick="sendRecipe()">Create recipe </button>
+    <button style="padding: 2px 28px;margin-top: 10px;" onclick="showIndexScreen();cleanFields();">Cancel </button>
+    <br/><br/></p>
+    <p>Direction list:</p><br/>
+    <p style="word-wrap: break-word;" id="newDirections"></p>
+    
+  </div>
+
+</div>  
+</div>
+
+<div  class="gridContainer" id="readScreen"><!------ READ PAGE------->
+  <h2 id=show_rname></h2>
+  <div class="leftDiv">
+    <p>Yields: </p><p id="show_yields"></p><br/>
+    <p>Preparation time: </p><p id="show_tmins"></p><p> mins</p><br/><br/>
+    <p>Ingredients:</p>
+    <p id="show_ingredients"></p>
+  </div>
+  <div class="rightDiv">
+    <p>Directions:</p><br/>
+    <p id="show_directions"></p>
+    <div style="text-align: center;">
+      <p>
+      <button class="mediumButton" onclick="fillEditRecipe();cleanFields();">Edit</button>
+      <button class="mediumButton" onclick="deleteRecipe();">Delete</button>
+      <button class="mediumButton" onclick="showIndexScreen();cleanFields();">Back</button>
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+
+  
+</div>
+
+<script type="text/javascript">
+
+  showIndexScreen();
+  
+
+  var ingNamesList=[];
+  var ingAmountsList=[];
+  var directionsList=[];
+  var currentId=0;
+
+  function showCreationScreen(){
+    sectionDisplay("indexScreen","hide");
+    sectionDisplay("readScreen","hide");
+    sectionDisplay("creationScreen","show");
+    cleanFields();
+    document.getElementById("createTitle").innerHTML="Create recipe: "; 
+    document.getElementById("createb").innerHTML="Create recipe";
+    document.getElementById("createb").setAttribute( "onClick", "javascript: sendRecipe();" );
+
+
+  }
+
+  function showEditScreen(){
+    sectionDisplay("indexScreen","hide");
+    sectionDisplay("readScreen","hide");
+    sectionDisplay("creationScreen","show");
+    document.getElementById("createTitle").innerHTML="Edit recipe: ";
+    document.getElementById("createb").innerHTML="Edit recipe";
+    document.getElementById("createb").setAttribute( "onClick", "javascript: sendEditRecipe();" );
+
+  }
+
+  function showIndexScreen(){
+    cleanFields();
+    loadRecipes();    
+    sectionDisplay("creationScreen","hide");
+    sectionDisplay("readScreen","hide");
+    sectionDisplay("indexScreen","show");
+
+  }
+
+  function showReadScreen(){
+    sectionDisplay("indexScreen","hide");
+    sectionDisplay("creationScreen","hide");
+    sectionDisplay("readScreen","show");
+
+  }
+  
+  function sectionDisplay(sectionid,action) {        
+      var x = document.getElementById(sectionid);
+      if(action=="show") x.style.display = "block";
+      if(action=="hide") x.style.display = "none";
+  }
+
+  function loadRecipes(){///////////MAIN METHOD
+    document.getElementById("recipeslist").innerHTML="";
+    recipeList = document.getElementById("recipeslist");
+
+    fetch("/json/recipes")
+      .then(response => response.json())
+      .then(responseList => {
+        responseList.forEach(recipe => {
+          row = document.createElement("ul")
+          rname = document.createElement("li")
+          rlink=document.createElement("a")
+          //rlink.href="#"
+          rlink.setAttribute( "onClick", "javascript: showRecipe("+recipe.rId+");" );
+          rlink.innerHTML=recipe.rname
+          rdetails=document.createElement("p")
+          rdetails.innerHTML=": "+recipe.servings+" servings, "+recipe.tmins+" minutes."          
+
+          rlink.appendChild(rdetails)
+          rname.appendChild(rlink)
+          row.appendChild(rname)
+          recipeList.appendChild(row)
+        })
+      }) 
+    } 
+
+  function newIng() {
+    ing_name=document.getElementById("input_ing").value;
+    ing_amount=document.getElementById("input_amount").value;
+    if (ing_name=="" || ing_amount==""){ window.alert("Please fill both fields");return;}
+    ingNamesList.push(ing_name);
+    ingAmountsList.push(ing_amount); 
+    displayIngs();
+  } 
+      
+  function displayIngs(){    
+      iLen = ingNamesList.length;
+      text = "<ul>";
+      for (i = 0; i < iLen; i++) {
+          text += "<li>" + ingNamesList[i] +": "+ingAmountsList[i]+ "</li>";
+      }
+        text += "</ul>";
+        document.getElementById("input_ing").value="";
+        document.getElementById("input_amount").value="";
+        document.getElementById("newIngredients").innerHTML = text;
+    
+  } 
+
+  function newDir() {
+    new_dir=document.getElementById("input_dir").value;
+    if (new_dir==""){
+      window.alert("Please write a direction");
+    }
+    else{      
+      directionsList.push(new_dir);
+    }
+    displayDirs();
+  }
+
+  function deleteDir(){
+    var num=directionsList.length;
+    if(num==1){directionsList.splice(0,1);displayDirs();return;}
+    if(num==0){alert("No directions to delete");return;}
+    var dnum = parseInt(prompt("Insert step to delete",""));    
+    if(isNaN(dnum)|| dnum==0 || dnum>num) {alert("Wrong value, insert a number between 1 and "+num);return;}
+    directionsList.splice(dnum-1,1);
+    displayDirs();
+    }
+
+
+  function displayDirs(){
+    iLen = directionsList.length;
+    text = "<ol>";
+    for (i = 0; i < iLen; i++) {
+        text += "<li>" + directionsList[i] +"</li>";
+    }
+    text += "</ol>";  
+    document.getElementById("input_dir").value="";
+    document.getElementById("newDirections").innerHTML = text;
+  }   
+  
+
+    function buildNewRecipe(){//////////////////////MAIN METHOD
+      var recipe_name= document.getElementById("input_name").value;
+      var recipe_yields=parseInt(document.getElementById("input_yields").value);      
+      var recipe_tmins=parseInt(document.getElementById("input_tmins").value);
+      if(recipe_name==""){alert("Write a recipe name"); return;}
+      if(isNaN(recipe_yields) || recipe_yields==0){alert("Write a number in Yields field"); return;}
+      if(isNaN(recipe_tmins) || recipe_tmins==0){alert("Write a number in Time field"); return;}
+      if(ingNamesList.length==0){alert("Add at least one ingredient");return;}
+      if(directionsList.length==0){alert("Add at least one direction");return;}
+      
+
+      var new_recipe={rname: recipe_name,
+                      servings:recipe_yields,
+                      tmins:recipe_tmins,
+                      ingNames:ingNamesList,
+                      ingAmounts: ingAmountsList,
+                      directions: directionsList,
+                      };
+      return new_recipe;
+    }
+
+  function sendRecipe(){
+      var url = "/json/recipes";
+      new_recipe=buildNewRecipe();
+      var json = JSON.stringify(new_recipe);
+      
+      fetch(url,
+      {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: json
+      })
+      .then(function(res){ console.log(res) })
+      .catch(function(res){ console.log(res) })
+      showIndexScreen();
+  }
+
+  function sendEditRecipe(){
+      var url = "/json/recipes/"+currentId;
+      new_recipe=buildNewRecipe();
+      var json = JSON.stringify(new_recipe);
+      
+      fetch(url,
+      {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "PUT",
+          body: json
+      })
+      .then(function(res){ console.log(res) })
+      .catch(function(res){ console.log(res) })
+      showIndexScreen();
+  }
+
+      function cleanFields(){
+        document.getElementById("input_name").value="";
+        document.getElementById("input_yields").value="";
+        document.getElementById("input_tmins").value="";
+        document.getElementById("input_ing").value="";
+        document.getElementById("input_amount").value="";
+        document.getElementById("input_dir").value="";
+        document.getElementById("newIngredients").innerHTML="";
+        document.getElementById("newDirections").innerHTML="";
+        document.getElementById("show_rname").innerHTML="";
+        document.getElementById("show_yields").innerHTML="";
+        document.getElementById("show_tmins").innerHTML="";
+        document.getElementById("show_ingredients").innerHTML="";
+        document.getElementById("show_directions").innerHTML="";
+        ingNamesList=[];
+        ingAmountsList=[];
+        directionsList=[];
+      }
+
+      function showRecipe(rId){
+        showReadScreen();
+        currentId=rId;
+        site="/json/recipes/"+rId;
+        fetch(site)
+          .then(response => response.json())
+          .then(recipe => {
+              document.getElementById("show_rname").innerHTML=recipe.rname;
+              document.getElementById("show_yields").innerHTML=recipe.servings;
+              document.getElementById("show_tmins").innerHTML=recipe.tmins;
+
+              iLen = recipe.ingNames.length;
+              text = "<ul>";
+              for (i = 0; i < iLen; i++) {
+                  text += "<li>" + recipe.ingNames[i] +": "+recipe.ingAmounts[i]+ "</li>";
+              }
+              text += "</ul>";
+              document.getElementById("show_ingredients").innerHTML = text;
+              
+              iLen = recipe.directions.length;
+              text = "<ol>";
+              for (i = 0; i < iLen; i++) {
+                  text += "<li>" + recipe.directions[i] +"</li>";
+              }
+              text += "</ol>";
+              document.getElementById("show_directions").innerHTML = text;
+          })
+      }
+
+     function fillEditRecipe(){
+        showEditScreen();
+        site="/json/recipes/"+currentId;
+        fetch(site)
+          .then(response => response.json())
+          .then(recipe => {
+              document.getElementById("input_name").value=recipe.rname;
+              document.getElementById("input_yields").value=recipe.servings;
+              document.getElementById("input_tmins").value=recipe.tmins;
+
+              ingNamesList=recipe.ingNames;
+              ingAmountsList=recipe.ingAmounts;
+              directionsList=recipe.directions;
+              displayDirs();
+              displayIngs();              
+          })
+      }
+
+
+
+    function deleteRecipe(){
+      recipename=document.getElementById("show_rname").innerHTML;
+      site="/json/recipes/"+currentId;
+      if(confirm("Delete "+recipename+" recipe?")){
+        var json = JSON.stringify({});
+
+        fetch(site,
+        {
+            method: "DELETE"
+        })
+        .then(function(res){ console.log(res) })
+        .catch(function(res){ console.log(res) })
+        showIndexScreen();
+      }
+    }
+        //}
+        //else{return;}
+      
+
+  </script>
+
+
+</body>
+</html>
