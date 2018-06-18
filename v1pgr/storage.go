@@ -2,6 +2,7 @@ package main
 
 import (
     "database/sql"
+    "github.com/lib/pq"
     "fmt"
     )
 type Recipe struct {
@@ -47,9 +48,9 @@ func (store *DBstored) GetRecipes() ([]Recipe) {
                 &recipe.Name,
                 &recipe.Servings,
                 &recipe.Tmins,
-                pq.Array(&recipe.IngNames)
-                pq.Array(&recipe.IngAmounts)
-                pq.Array(&recipe.Directions)
+                pq.Array(&recipe.IngNames),
+                pq.Array(&recipe.IngAmounts),
+                pq.Array(&recipe.Directions),
                 ); 
             err != nil { errCatch(err) }        
         recipes = append(recipes, *recipe)
@@ -61,13 +62,13 @@ func (received *DBstored) AddRecipe(recipe Recipe) Recipe {
 
     var lastInsertId int
     squery:="insert into recipes(name,servings,tmins,ingnames,ingamounts,directions) values($1,$2,$3,$4,$5,$6) returning id"
-    err:= received.db.QueryRow("astaxieupdate", 
-        recipe.Name
-        recipe.Servings
-        recipe.Tmins
-        pq.Array(recipe.IngNames)
-        pq.Array(recipe.IngAmounts)
-        pq.Array(recipe.Directions)
+    err:= received.db.QueryRow(squery, 
+        recipe.Name,
+        recipe.Servings,
+        recipe.Tmins,
+        pq.Array(recipe.IngNames),
+        pq.Array(recipe.IngAmounts),
+        pq.Array(recipe.Directions),
         ).Scan(&lastInsertId)
     errCatch(err)
     recipe.Id=lastInsertId
@@ -85,9 +86,9 @@ func (received *DBstored) ReadRecipe(id int) Recipe {
         &recipe.Name,
         &recipe.Servings,
         &recipe.Tmins,
-        pq.Array(&recipe.IngNames)
-        pq.Array(&recipe.IngAmounts)
-        pq.Array(&recipe.Directions)
+        pq.Array(&recipe.IngNames),
+        pq.Array(&recipe.IngAmounts),
+        pq.Array(&recipe.Directions),
         ); 
     err != nil {errCatch(err)}
     
@@ -97,7 +98,7 @@ func (received *DBstored) ReadRecipe(id int) Recipe {
 func (received *DBstored) EditRecipe(id int, newrecipe Recipe) Recipe {
     var exist bool
     err:= received.db.QueryRow("select exists(select * from recipes where id=$1",id).Scan(&exist)
-
+    errCatch(err)
     if exist!=true{ 
         fmt.Printf("edit recipe not found")
         return Recipe{} 
@@ -128,7 +129,7 @@ func (received *DBstored) EditRecipe(id int, newrecipe Recipe) Recipe {
         _,err:=received.db.Query("update recipes set directions=$1 where id=&2",pq.Array(newrecipe.Directions),id)
         errCatch(err)
     }
-    return received.db.ReadRecipe(id)   
+    return received.ReadRecipe(id)   
 }
 
 func (received *DBstored) DeleteRecipe(id int) string {
@@ -139,7 +140,7 @@ func (received *DBstored) DeleteRecipe(id int) string {
         fmt.Printf("delete recipe not found")
         return "not found"
     }
-    _,err:=received.db.QueryRow("delete from recipes where id=$1",id)
+    _, err=received.db.Query("delete from recipes where id=$1",id)
     errCatch(err)
 
     return "deleted"           

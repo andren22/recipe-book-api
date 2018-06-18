@@ -3,6 +3,8 @@ package main
 import (
     "log"
     "net/http"
+    "database/sql"
+    _ "github.com/lib/pq"
     "fmt"
 )
 const (
@@ -33,7 +35,7 @@ func main() {
     errCatch(err)
     defer db.Close()
 
-    initDB(db);
+    InitDB(db);
 	router := NewRouter()
 
     log.Fatal(http.ListenAndServe(":8080", router))
