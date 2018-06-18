@@ -3,8 +3,8 @@ package main
 import (
     "database/sql"
     "github.com/lib/pq"
-    "fmt"
     )
+
 type Recipe struct {
     Id        int       `json:"rId"`
     Name      string    `json:"rname"`
@@ -101,7 +101,6 @@ func (received *DBstored) EditRecipe(id int, newrecipe Recipe) Recipe {
     err:= received.db.QueryRow("select exists(select * from recipes where id=$1)",id).Scan(&exist)
     errCatch(err)
     if exist!=true{ 
-        fmt.Printf("delete recipe not found")
         return Recipe{}
     }
 
@@ -142,7 +141,6 @@ func (received *DBstored) DeleteRecipe(id int) string {
     err:= received.db.QueryRow("select exists(select * from recipes where id=$1)",id).Scan(&exist)
     errCatch(err)
     if exist!=true{ 
-        fmt.Printf("delete recipe not found")
         return "not found"
     }
     _, err=received.db.Query("delete from recipes where id=$1",id)
