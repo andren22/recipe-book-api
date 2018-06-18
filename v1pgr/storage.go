@@ -81,6 +81,7 @@ func (received *DBstored) ReadRecipe(id int) Recipe {
     defer rows.Close()
 
     recipe := &Recipe{}
+    rows.Next()
     if err := rows.Scan(
         &recipe.Id,
         &recipe.Name,
@@ -97,44 +98,48 @@ func (received *DBstored) ReadRecipe(id int) Recipe {
 
 func (received *DBstored) EditRecipe(id int, newrecipe Recipe) Recipe {
     var exist bool
-    err:= received.db.QueryRow("select exists(select * from recipes where id=$1",id).Scan(&exist)
+    err:= received.db.QueryRow("select exists(select * from recipes where id=$1)",id).Scan(&exist)
     errCatch(err)
     if exist!=true{ 
-        fmt.Printf("edit recipe not found")
-        return Recipe{} 
+        fmt.Printf("delete recipe not found")
+        return Recipe{}
     }
 
     if(newrecipe.Name!=""){
-        _,err:=received.db.Query("update recipes set name=$1 where id=&2",newrecipe.Name,id)
+        _,err:=received.db.Query("update recipes set name=$1 where id=$2",newrecipe.Name,id)
         errCatch(err)
     }
-    if(newrecipe.Servings!=0){
-        _,err:=received.db.Query("update recipes set servings=$1 where id=&2",newrecipe.Servings,id)
-        errCatch(err)
 
+    if(newrecipe.Servings!=0){
+        _,err:=received.db.Query("update recipes set servings=$1 where id=$2",newrecipe.Servings,id)
+        errCatch(err)
     }
+
     if(newrecipe.Tmins!=0){
-        _,err:=received.db.Query("update recipes set tmins=$1 where id=&2",newrecipe.Tmins,id)
+        _,err:=received.db.Query("update recipes set tmins=$1 where id=$2",newrecipe.Tmins,id)
         errCatch(err)
     }
+
     if(len(newrecipe.IngNames)!=0){
-        _,err:=received.db.Query("update recipes set ingnames=$1 where id=&2",pq.Array(newrecipe.IngNames),id)
+        _,err:=received.db.Query("update recipes set ingnames=$1 where id=$2",pq.Array(newrecipe.IngNames),id)
         errCatch(err)
     }
+
     if(len(newrecipe.IngAmounts)!=0){
-        _,err:=received.db.Query("update recipes set ingamounts=$1 where id=&2",pq.Array(newrecipe.IngAmounts),id)
+        _,err:=received.db.Query("update recipes set ingamounts=$1 where id=$2",pq.Array(newrecipe.IngAmounts),id)
         errCatch(err)
     }
+
     if(len(newrecipe.Directions)!=0){
-        _,err:=received.db.Query("update recipes set directions=$1 where id=&2",pq.Array(newrecipe.Directions),id)
+        _,err:=received.db.Query("update recipes set directions=$1 where id=$2",pq.Array(newrecipe.Directions),id)
         errCatch(err)
     }
-    return received.ReadRecipe(id)   
+    return Recipe{}
 }
 
 func (received *DBstored) DeleteRecipe(id int) string {
     var exist bool
-    err:= received.db.QueryRow("select exists(select * from recipes where id=$1",id).Scan(&exist)
+    err:= received.db.QueryRow("select exists(select * from recipes where id=$1)",id).Scan(&exist)
     errCatch(err)
     if exist!=true{ 
         fmt.Printf("delete recipe not found")

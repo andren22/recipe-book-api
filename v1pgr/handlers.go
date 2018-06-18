@@ -67,20 +67,16 @@ func GetRecipeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func EditRecipeHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("Edit recipe request\n")
     var recipe Recipe 
     w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-
     vars := mux.Vars(r)
     recipeId, err := strconv.Atoi(vars["recipeId"])
     errCatch(err)
-
     body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
     errCatch(err)
     err = r.Body.Close()
     errCatch(err)
     err = json.Unmarshal(body, &recipe)
-
     if err != nil {
         w.WriteHeader(422) // unprocessable entity
         jsonerror,err:=json.Marshal(err)
