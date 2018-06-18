@@ -1,0 +1,63 @@
+<!doctype html>
+
+<html class="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documento sin título</title>
+<link href="/styles/boilerplate.css" rel="stylesheet" type="text/css">
+<link href="/styles/index.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.gridContainer.clearfix #LayoutDiv1 h1 {
+	text-align: center;
+}
+.gridContainer {
+  width: 600px;
+}
+</style>
+</head>
+
+<body>
+<div class="gridContainer clearfix">
+  <div id="LayoutDiv1">
+    <h1>Recipe List Book</h1>
+  </div>
+</div>
+<p id="demo"></p>
+<div  class="gridContainer" id="readScreen"><!------ READ PAGE------->
+  <h2>{{.Name}}</h2>
+  <div class="leftDiv">
+  	<p style="display:none" id="rId">{{.Id}}</p>
+    <p>Yields: {{.Servings}}</p><br/>
+    <p>Preparation time: {{.Tmins}}</p><p> mins</p><br/><br/>
+    <p>Ingredients:</p>
+    <ul>
+   {{range $i, $e := .IngNames}} <li><p>{{index $.IngNames $i}}: {{index $.IngAmounts $i}}</p></li>{{end}}
+	</ul>
+  </div>
+  <div class="rightDiv">
+    <p>Directions:</p><br/>
+    <ol>
+    	{{range .Directions}}<li><p>{{.}}</p></li>{{end}}
+    </ol>
+
+    <div style="text-align: center;">
+      
+  <button style="padding: 0px 20px;margin-right:10px;" onclick="editPage()"><p>Edit</p></button>
+  <button style="padding: 0px 20px;margin-right:10px;"onclick="deleteRecipe()"><p>Delete</p></button>
+  <a href="/web/recipes" ><button style="padding: 0px 20px;margin-right:10px;"><p> Back</p></button></a>   
+
+  </div>
+</div> 
+</div>
+
+<script src="/styles/webcreatejs.js"></script>
+<script type="text/javascript">
+  var ingNamesList=[];
+  var ingAmountsList=[];
+  var directionsList=[];
+
+</script>
+</body>
+</html>

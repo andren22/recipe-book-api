@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html class="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documento sin título</title>
+<link href="/styles/boilerplate.css" rel="stylesheet" type="text/css">
+<link href="/styles/index.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.gridContainer.clearfix #LayoutDiv1 h1 {
+	text-align: center;
+}
+.gridContainer {
+  width: 600px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="gridContainer clearfix">
+  <div id="LayoutDiv1">
+    <h1>Recipe List Book</h1>
+  </div>
+</div>
+
+<div class="gridContainer" id="creationScreen"><!-------- CREATION PAGE-------->
+
+  <h2 id="createTitle">Create recipe:</h2>
+  <div class="leftDiv">  
+  	<p style="display:none" id="rId">{{.Id}}</p>
+    <p>Name: <input class="recipeField" type="text" name="input_name" id="input_name" value="{{.Name}}"></p><br/>
+    <p>Yields: <input class="recipeField" type="text" name="input_yields" id="input_yields" value={{.Servings}}></p><br/>
+    <p>Time (minutes): <input class="smallField" type="text" name="input_tmins" id="input_tmins" value={{.Tmins}}></p><br/>
+    <p>New ingredient:</p><br/>
+    <p class="tabtext">Name: <input class="recipeField" type="text" name="input_ing" id="input_ing"></p><br/>
+    <p class="tabtext">Amount: <input class="smallField" type="text" name="input_amount" id="input_amount"></p><br/>
+    <p class="tabtext">
+      <button style="padding:3px;" onclick="newIng()">Add ingredient</button></p><br/><br/>
+    <p>Ingredient list:</p><br/>
+    <p id="pIngredients">
+    <ul id="newIngredients">
+		{{range $i, $e := .IngNames}} <p><li>{{index $.IngNames $i}}: {{index $.IngAmounts $i}}</li></p>{{end}}
+    </ul></p>
+  </div>
+  
+  <div class="rightDiv">
+    <p>New direction:</p><br/>
+    <p> 
+      <textarea id="input_dir" text="text"></textarea>
+    </p><br/>
+    <p>
+    <button style="padding: 2px 10px;margin-right:10px;" onclick="newDir()">Add direction</button>
+    <button style="padding: 2px 5px;" onclick="deleteDir()">Delete direction</button><br/>
+    <button id="createb" style="padding: 2px 10px;margin-right:10px;margin-top: 10px;" onclick="sendRecipe()">Create recipe </button>
+    <button style="padding: 2px 28px;margin-top: 10px;" onclick="goBack();">Cancel </button><br/><br/></p>
+    <p>Direction list:</p><br/>
+    <p id="pDirections" style="word-wrap: break-word;" ></p>
+	<ol id="newDirections">
+    {{range .Directions}}<p><li>{{.}}</li></p>{{end}}
+    </ol>
+    
+  </div>
+
+</div>  
+</div>
+
+<script src="/styles/webcreatejs.js"></script>
+<script type="text/javascript">
+  var ingNamesList=[];
+  var ingAmountsList=[];
+  var directionsList=[];
+  init_create();
+</script>
+</body>
+</html>
+
+

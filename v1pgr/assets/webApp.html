@@ -1,0 +1,97 @@
+<!doctype html>
+
+<html class="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documento sin título</title>
+<link href="boilerplate.css" rel="stylesheet" type="text/css">
+<link href="index.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.gridContainer.clearfix #LayoutDiv1 h1 {
+	text-align: center;
+}
+.gridContainer {
+  width: 600px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="gridContainer clearfix">
+  <div id="LayoutDiv1">
+    <h1>Recipe List Book</h1>
+  </div>
+</div>
+
+<div class="gridContainer" id="indexScreen"><!------------ MAIN PAGE------------->
+  <h2>Recipe list:</h2>
+  <p id="recipeslist"></p>
+  <div style="text-align: center;"><p><button class="mediumButton" onclick="showCreationScreen()">Create recipe</button></p></div>  
+</div>
+
+
+<div class="gridContainer" id="creationScreen"><!-------- CREATION PAGE-------->
+
+  <h2 id="createTitle">Create/Edit recipe:</h2>
+  <div class="leftDiv">  
+    <p>Name: <input class="recipeField" type="text" name="input_name" id="input_name"></p><br/>
+    <p>Yields: <input class="recipeField" type="text" name="input_yields" id="input_yields"></p><br/>
+    <p>Time (minutes): <input class="smallField" type="text" name="input_tmins" id="input_tmins"></p><br/>
+    <p>New ingredient:</p><br/>
+    <p class="tabtext">Name: <input class="recipeField" type="text" name="input_ing" id="input_ing"></p><br/>
+    <p class="tabtext">Amount: <input class="smallField" type="text" name="input_amount" id="input_amount"></p><br/>
+    <p class="tabtext">
+      <button style="padding:3px;" onclick="newIng()">Add ingredient</button></p><br/><br/>
+    <p>Ingredient list:</p><br/>
+    <p id="newIngredients"></p>
+  </div>
+  
+  <div class="rightDiv">
+    <p>New direction:</p><br/>
+    <p> 
+      <textarea id="input_dir" text="text"></textarea>
+    </p><br/>
+    <p>
+    <button style="padding: 2px 10px;margin-right:10px;" onclick="newDir()">Add direction</button>
+    <button style="padding: 2px 5px;" onclick="deleteDir()">Delete direction</button><br/>
+    <button id="createb" style="padding: 2px 10px;margin-right:10px;margin-top: 10px;" onclick="sendRecipe()">Create recipe </button>
+    <button style="padding: 2px 28px;margin-top: 10px;" onclick="showIndexScreen();cleanFields();">Cancel </button>
+    <br/><br/></p>
+    <p>Direction list:</p><br/>
+    <p style="word-wrap: break-word;" id="newDirections"></p>    
+  </div>
+
+</div>  
+
+<div  class="gridContainer" id="readScreen"><!------ READ PAGE------->
+  <h2 id=show_rname></h2>
+  <div class="leftDiv">
+    <p>Yields: </p><p id="show_yields"></p><br/>
+    <p>Preparation time: </p><p id="show_tmins"></p><p> mins</p><br/><br/>
+    <p>Ingredients:</p>
+    <p id="show_ingredients"></p>
+  </div>
+  <div class="rightDiv">
+    <p>Directions:</p><br/>
+    <p id="show_directions"></p>
+    <div style="text-align: center;">
+      <p>
+      <button class="mediumButton" onclick="fillEditRecipe();cleanFields();">Edit</button>
+      <button class="mediumButton" onclick="deleteRecipe();">Delete</button>
+      <button class="mediumButton" onclick="showIndexScreen();cleanFields();">Back</button>
+      </p>
+    </div>
+
+  </div>
+</div>  
+
+<script src="jsapp.js"></script>
+<script type="text/javascript">
+  load();
+</script>
+
+</body>
+</html>

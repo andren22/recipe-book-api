@@ -1,0 +1,44 @@
+<!doctype html>
+
+<html class="">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documento sin título</title>
+<link href="/styles/boilerplate.css" rel="stylesheet" type="text/css">
+<link href="/styles/index.css" rel="stylesheet" type="text/css">
+
+<style type="text/css">
+.gridContainer.clearfix #LayoutDiv1 h1 {
+	text-align: center;
+}
+.gridContainer {
+  width: 600px;
+}
+
+</style>
+</head>
+
+<body>
+<script>load();</script>	
+<div class="gridContainer clearfix">
+  <div id="LayoutDiv1">
+    <h1>Recipe List Book</h1>
+  </div>
+</div>
+<div class="gridContainer" id="indexScreen"><!------------ MAIN PAGE------------->
+
+
+  <h2>{{.Description}}</h2>
+  <ul>
+  {{range .RecipesL}}
+    <li><p><a href="/web/recipes/{{.Id}}">{{.Name}}: {{.Servings}} yields, {{.Tmins}} minutes.</a></p></li>
+  {{end}}
+  </ul>
+
+
+  <div style="text-align: center;"><p>
+  	<form action="/web/recipes" method="POST"><input type="submit" value="Create recipe" /></form>
+  </p></div> 
+  
+</div>
