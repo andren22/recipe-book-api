@@ -1,5 +1,4 @@
 package main
-import "fmt"
 type Recipe struct {
     Id        int       `json:"rId"`
     Name      string    `json:"rname"`
@@ -39,36 +38,28 @@ func EditRecipe(id int, newrecipe Recipe) Recipe {
     var ind int;
     for i, v := range recipesdb {
         if v.Id == id {
-            //recipe= &v
             ind=i;
             found=1
-            fmt.Printf("    recipe found")
         }
     }
     if found==1{
         if(newrecipe.Name!=""){
             recipesdb[ind].Name=newrecipe.Name
-            fmt.Printf("    Name updated")
         }
         if(newrecipe.Servings!=0){
             recipesdb[ind].Servings=newrecipe.Servings
-            fmt.Printf("    servings updated")
         }
         if(newrecipe.Tmins!=0){
             recipesdb[ind].Tmins=newrecipe.Tmins
-            fmt.Printf("    tmins updated")
         }
         if(len(newrecipe.IngNames)!=0){
             recipesdb[ind].IngNames=newrecipe.IngNames
-            fmt.Printf("    ing names updated")
         }
         if(len(newrecipe.IngAmounts)!=0){
             recipesdb[ind].IngAmounts=newrecipe.IngAmounts
-            fmt.Printf("    ing amounts updated")
         }
         if(len(newrecipe.Directions)!=0){
             recipesdb[ind].Directions=newrecipe.Directions
-            fmt.Printf("    directions updated")
         }
 
         return recipesdb[ind]

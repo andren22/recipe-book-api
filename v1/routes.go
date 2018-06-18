@@ -8,16 +8,16 @@ type Route struct {
     Pattern     string
     HandlerFunc http.HandlerFunc
 }
-type WebRoute struct {
+type StaticRoute struct {
     Method      string
     Pattern     string
 }
 
 type Routes []Route
-type WebRoutes []WebRoute
+type StaticRoutes []StaticRoute
 
 var routes = Routes{
-
+    //--------JSON Routes-------//
     Route{
         "GetAllRecipes",
         "GET",
@@ -48,19 +48,66 @@ var routes = Routes{
 		"/json/recipes/{recipeId}",
 		DeleteRecipeHandler,
 	},
-
+    //-------Web App Route-------//
     Route{
         "WebRecipeApp",
         "GET",
         "/recipes/app",
-        WebRecipesAppHandler,
+        WebAppHandler,
     },
+
+    //-------HTML Routes---------//
+    Route{
+        "WebRecipeList",
+        "GET",
+        "/web/recipes",
+        WebListHandler,
+    },
+    Route{
+        "WebRecipeList",
+        "POST",
+        "/web/recipes",
+        WebCreateRecipeHandler,
+    },
+    
+    Route{
+        "WebShowRecipe",
+        "GET",
+        "/web/recipes/{recipeId}",
+        WebGetRecipeHandler,
+    },
+
+    Route{
+        "WebDeleteRecipe",
+        "DELETE",
+        "/web/recipes/{recipeId}",
+        WebDeleteRecipeHandler,
+    },
+
+    Route{
+        "WebEditRecipe",
+        "PUT",
+        "/web/recipes/{recipeId}",
+        WebEditRecipeHandler,
+    },
+
+
 }
 
-var webroutes = WebRoutes{
-    WebRoute{
+var staticFileRoutes = StaticRoutes{
+    StaticRoute{
         "GET",
         "/recipes/app/",
+    },
+
+    StaticRoute{
+        "GET",
+        "/styles/",
+    },
+
+    StaticRoute{
+        "GET",
+        "/web/recipes/create/",
     },
 }
 

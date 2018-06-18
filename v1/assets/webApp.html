@@ -1,10 +1,6 @@
 <!doctype html>
-<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
-<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
-<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
-<!--[if gt IE 8]><!-->
+
 <html class="">
-<!--<![endif]-->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,20 +19,17 @@
 </head>
 
 <body>
-<script>load();</script>
+
 <div class="gridContainer clearfix">
   <div id="LayoutDiv1">
     <h1>Recipe List Book</h1>
   </div>
 </div>
-<p id="demo"></p>
+
 <div class="gridContainer" id="indexScreen"><!------------ MAIN PAGE------------->
   <h2>Recipe list:</h2>
   <p id="recipeslist"></p>
-
-
-  <div style="text-align: center;"><p><button class="mediumButton" onclick="showCreationScreen()">Create recipe</button></p></div>
-  
+  <div style="text-align: center;"><p><button class="mediumButton" onclick="showCreationScreen()">Create recipe</button></p></div>  
 </div>
 
 
@@ -63,17 +56,15 @@
     </p><br/>
     <p>
     <button style="padding: 2px 10px;margin-right:10px;" onclick="newDir()">Add direction</button>
-    <button style="padding: 2px 5px;" onclick="deleteDir()">Delete directions</button><br/>
+    <button style="padding: 2px 5px;" onclick="deleteDir()">Delete direction</button><br/>
     <button id="createb" style="padding: 2px 10px;margin-right:10px;margin-top: 10px;" onclick="sendRecipe()">Create recipe </button>
     <button style="padding: 2px 28px;margin-top: 10px;" onclick="showIndexScreen();cleanFields();">Cancel </button>
     <br/><br/></p>
     <p>Direction list:</p><br/>
-    <p style="word-wrap: break-word;" id="newDirections"></p>
-    
+    <p style="word-wrap: break-word;" id="newDirections"></p>    
   </div>
 
 </div>  
-</div>
 
 <div  class="gridContainer" id="readScreen"><!------ READ PAGE------->
   <h2 id=show_rname></h2>
@@ -95,18 +86,12 @@
     </div>
 
   </div>
+</div>  
 
-</div>
-
-
-  
-</div>
 <script src="jsapp.js"></script>
 <script type="text/javascript">
   load();
 </script>
-
-
 
 </body>
 </html>

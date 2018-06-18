@@ -131,13 +131,11 @@ function buildNewRecipe(){
   var recipe_name= document.getElementById("input_name").value;
   var recipe_yields=parseInt(document.getElementById("input_yields").value);      
   var recipe_tmins=parseInt(document.getElementById("input_tmins").value);
-  if(recipe_name==""){alert("Write a recipe name"); return;}
-  if(isNaN(recipe_yields) || recipe_yields==0){alert("Write a number in Yields field"); return;}
-  if(isNaN(recipe_tmins) || recipe_tmins==0){alert("Write a number in Time field"); return;}
-  if(ingNamesList.length==0){alert("Add at least one ingredient");return;}
-  if(directionsList.length==0){alert("Add at least one direction");return;}
-  
-
+  if(recipe_name==""){alert("Write a recipe name"); return false;}
+  if(isNaN(recipe_yields) || recipe_yields==0){alert("Write a number in Yields field"); return false;}
+  if(isNaN(recipe_tmins) || recipe_tmins==0){alert("Write a number in Time field"); return false;}
+  if(ingNamesList.length==0){alert("Add at least one ingredient");return false;}
+  if(directionsList.length==0){alert("Add at least one direction");return false;}
   var new_recipe={rname: recipe_name,
                   servings:recipe_yields,
                   tmins:recipe_tmins,
@@ -151,6 +149,8 @@ function buildNewRecipe(){
 function sendRecipe(){
     var url = "/json/recipes";
     new_recipe=buildNewRecipe();
+    if(!new_recipe){return;}
+
     var json = JSON.stringify(new_recipe);
     
     fetch(url,
@@ -162,9 +162,9 @@ function sendRecipe(){
         method: "POST",
         body: json
     })
-    .then(function(res){ console.log(res) })
+    .then(function(res){ alert("Recipe "+new_recipe.rname+" created"); showIndexScreen();})
     .catch(function(res){ console.log(res) })
-    showIndexScreen();
+    
 }
 
  function fillEditRecipe(){
@@ -188,6 +188,8 @@ function sendRecipe(){
 function sendEditRecipe(){
     var url = "/json/recipes/"+currentId;
     new_recipe=buildNewRecipe();
+    if(!new_recipe){return;}
+
     var json = JSON.stringify(new_recipe);
     
     fetch(url,
@@ -199,9 +201,9 @@ function sendEditRecipe(){
         method: "PUT",
         body: json
     })
-    .then(function(res){ console.log(res) })
+    .then(function(res){ alert("Recipe "+new_recipe.rname+" edited");showIndexScreen(); })
     .catch(function(res){ console.log(res) })
-    showIndexScreen();
+    
 }
 
 //////////////////////Show recipe screen code////////////////////////////////
@@ -244,9 +246,9 @@ function deleteRecipe(){
     {
         method: "DELETE"
     })
-    .then(function(res){ console.log(res) })
+    .then(function(res){ alert("Recipe deleted"); showIndexScreen();})
     .catch(function(res){ console.log(res) })
-    showIndexScreen();
+    
   }
 }
 

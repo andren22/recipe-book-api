@@ -8,12 +8,14 @@ import (
 	"io/ioutil"
     "github.com/gorilla/mux"
     "strconv" 
+    "html/template"
 
 )
-func WebRecipesAppHandler(w http.ResponseWriter, r *http.Request) {
+func WebAppHandler(w http.ResponseWriter, r *http.Request) {
     http.Redirect(w, r, "/recipes/app/webApp.html", http.StatusFound)
 } 
 
+//-------------------------JSON Handlers------------------------------//
 func GetAllRecipesHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Printf("Get recipes request\n")
     jsonSend, err := json.Marshal(recipesdb)
@@ -110,4 +112,69 @@ func DeleteRecipeHandler(w http.ResponseWriter, r *http.Request) {
     
 }
 
+//--------------------------HTML Handlers---------------------------//
+
+type RecipeList struct {
+    Description string
+    RecipesL []Recipe
+}
+
+func WebListHandler(w http.ResponseWriter, r *http.Request) {
+    t := template.New("webList.html") 
+    t, err := t.ParseFiles("assets/webList.html")
+    errCatch(err)
+    d:=RecipeList{Description: "Recipe list: ", RecipesL:[]Recipe(recipesdb)}
+    t.Execute(w, d)
+}
+
+func WebCreateRecipeHandler(w http.ResponseWriter, r *http.Request) {
+    t := template.New("webCreate.html") 
+    t, err := t.ParseFiles("assets/webCreate.html")
+    errCatch(err)
+    d:=Recipe{};
+    t.Execute(w, d)
+} 
+
+func WebGetRecipeHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    t := template.New("webView.html") 
+    t, err := t.ParseFiles("assets/webView.html")
+    errCatch(err)
+
+    recipeId, err := strconv.Atoi(vars["recipeId"])
+    errCatch(err)
+    d:=ReadRecipe(recipeId)
+    t.Execute(w, d)
+}
+
+func WebDeleteRecipeHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    t := template.New("webDelete.html") 
+    t, err := t.ParseFiles("assets/webDelete.html")
+    errCatch(err)
+
+    recipeId, err := strconv.Atoi(vars["recipeId"])
+    errCatch(err)
+
+    msg:=DeleteRecipe(recipeId)
+    if msg =="not found" {
+        w.WriteHeader(422) // unprocessable entity
+    }else{
+        w.WriteHeader(http.StatusOK)
+    }
+
+    d:="Recipe "+msg
+    t.Execute(w, d)
+
+}
+
+func WebEditRecipeHandler(w http.ResponseWriter, r *http.Request) {
+    vars := mux.Vars(r)
+    t := template.New("webCreate.html") 
+    t, err := t.ParseFiles("assets/webCreate.html")
+    recipeId, err := strconv.Atoi(vars["recipeId"])
+    errCatch(err)
+    d:=ReadRecipe(recipeId)
+    t.Execute(w, d)
+} 
 
